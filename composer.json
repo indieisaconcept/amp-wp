@@ -1,7 +1,7 @@
 {
-    "name": "ampproject/amp-wp",
+    "name": "xwp/amp-wp",
     "description": "WordPress plugin for adding AMP support.",
-    "homepage": "https://github.com/ampproject/amp-wp",
+    "homepage": "https://github.com/xwp/amp-wp",
     "type": "wordpress-plugin",
     "license": "GPL-2.0",
     "repositories": [
