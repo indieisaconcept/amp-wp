@@ -27,7 +27,7 @@ class AMP_Post_Meta_Box {
 	 * @since 1.0
 	 * @var string
 	 */
-	const BLOCK_ASSET_HANDLE = 'amp-block-editor-toggle-compiled';
+	const BLOCK_ASSET_HANDLE = 'amp-block-editor';
 
 	/**
 	 * The enabled status post meta value.
@@ -83,13 +83,17 @@ class AMP_Post_Meta_Box {
 	 * @since 0.6
 	 */
 	public function init() {
-		register_meta( 'post', self::STATUS_POST_META_KEY, array(
-			'sanitize_callback' => array( $this, 'sanitize_status' ),
-			'type'              => 'string',
-			'description'       => __( 'AMP status.', 'amp' ),
-			'show_in_rest'      => true,
-			'single'            => true,
-		) );
+		register_meta(
+			'post',
+			self::STATUS_POST_META_KEY,
+			array(
+				'sanitize_callback' => array( $this, 'sanitize_status' ),
+				'type'              => 'string',
+				'description'       => __( 'AMP status.', 'amp' ),
+				'show_in_rest'      => true,
+				'single'            => true,
+			)
+		);
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_assets' ) );
@@ -106,7 +110,7 @@ class AMP_Post_Meta_Box {
 	 */
 	public function sanitize_status( $status ) {
 		$status = strtolower( trim( $status ) );
-		if ( ! in_array( $status, array( 'enabled', 'disabled' ), true ) ) {
+		if ( ! in_array( $status, array( self::ENABLED_STATUS, self::DISABLED_STATUS ), true ) ) {
 			/*
 			 * In lieu of actual validation being available, clear the status entirely
 			 * so that the underlying default status will be used instead.
@@ -132,12 +136,13 @@ class AMP_Post_Meta_Box {
 			'post' === $screen->base
 			&&
 			is_post_type_viewable( $post->post_type )
+			&&
+			AMP_Story_Post_Type::POST_TYPE_SLUG !== $post->post_type
 		);
 		if ( ! $validate ) {
 			return;
 		}
 
-		// Styles.
 		wp_enqueue_style(
 			self::ASSETS_HANDLE,
 			amp_get_asset_url( 'css/amp-post-meta-box.css' ),
@@ -145,12 +150,18 @@ class AMP_Post_Meta_Box {
 			AMP__VERSION
 		);
 
-		// Scripts.
+		$script_deps_path    = AMP__DIR__ . '/assets/js/' . self::ASSETS_HANDLE . '.deps.json';
+		$script_dependencies = file_exists( $script_deps_path )
+			? json_decode( file_get_contents( $script_deps_path ), false ) // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			: array();
+
+		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NotInFooter
 		wp_enqueue_script(
 			self::ASSETS_HANDLE,
-			amp_get_asset_url( 'js/amp-post-meta-box.js' ),
-			array( 'jquery' ),
-			AMP__VERSION
+			amp_get_asset_url( 'js/' . self::ASSETS_HANDLE . '.js' ),
+			$script_dependencies,
+			AMP__VERSION,
+			false
 		);
 
 		if ( current_theme_supports( AMP_Theme_Support::SLUG ) ) {
@@ -160,18 +171,24 @@ class AMP_Post_Meta_Box {
 			$support_errors = AMP_Post_Type_Support::get_support_errors( $post );
 		}
 
-		wp_add_inline_script( self::ASSETS_HANDLE, sprintf( 'ampPostMetaBox.boot( %s );',
-			wp_json_encode( array(
-				'previewLink'     => esc_url_raw( add_query_arg( amp_get_slug(), '', get_preview_post_link( $post ) ) ),
-				'canonical'       => amp_is_canonical(),
-				'enabled'         => empty( $support_errors ),
-				'canSupport'      => 0 === count( array_diff( $support_errors, array( 'post-status-disabled' ) ) ),
-				'statusInputName' => self::STATUS_INPUT_NAME,
-				'l10n'            => array(
-					'ampPreviewBtnLabel' => __( 'Preview changes in AMP (opens in new window)', 'amp' ),
-				),
-			) )
-		) );
+		wp_add_inline_script(
+			self::ASSETS_HANDLE,
+			sprintf(
+				'ampPostMetaBox.boot( %s );',
+				wp_json_encode(
+					array(
+						'previewLink'     => esc_url_raw( add_query_arg( amp_get_slug(), '', get_preview_post_link( $post ) ) ),
+						'canonical'       => amp_is_canonical(),
+						'enabled'         => empty( $support_errors ),
+						'canSupport'      => 0 === count( array_diff( $support_errors, array( 'post-status-disabled' ) ) ),
+						'statusInputName' => self::STATUS_INPUT_NAME,
+						'l10n'            => array(
+							'ampPreviewBtnLabel' => __( 'Preview changes in AMP (opens in new window)', 'amp' ),
+						),
+					)
+				)
+			)
+		);
 	}
 
 	/**
@@ -181,40 +198,62 @@ class AMP_Post_Meta_Box {
 	 */
 	public function enqueue_block_assets() {
 		$post = get_post();
-		if ( ! is_post_type_viewable( $post->post_type ) ) {
+		if ( ! is_post_type_viewable( $post->post_type ) || AMP_Story_Post_Type::POST_TYPE_SLUG === $post->post_type ) {
 			return;
 		}
+
+		wp_enqueue_style(
+			self::BLOCK_ASSET_HANDLE,
+			amp_get_asset_url( 'css/' . self::BLOCK_ASSET_HANDLE . '.css' ),
+			array(),
+			AMP__VERSION
+		);
+
+		$script_deps_path    = AMP__DIR__ . '/assets/js/' . self::BLOCK_ASSET_HANDLE . '.deps.json';
+		$script_dependencies = file_exists( $script_deps_path )
+			? json_decode( file_get_contents( $script_deps_path ), false ) // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			: array();
 
 		wp_enqueue_script(
 			self::BLOCK_ASSET_HANDLE,
 			amp_get_asset_url( 'js/' . self::BLOCK_ASSET_HANDLE . '.js' ),
-			array( 'wp-hooks', 'wp-i18n', 'wp-components' ),
+			$script_dependencies,
 			AMP__VERSION,
 			true
 		);
 
-		$status_and_errors = $this->get_status_and_errors( $post );
+		$status_and_errors = self::get_status_and_errors( get_post() );
 		$enabled_status    = $status_and_errors['status'];
 		$error_messages    = $this->get_error_messages( $status_and_errors['status'], $status_and_errors['errors'] );
-		$script_data       = array(
-			'possibleStati' => array( self::ENABLED_STATUS, self::DISABLED_STATUS ),
-			'defaultStatus' => $enabled_status,
-			'errorMessages' => $error_messages,
+
+		$data = array(
+			'possibleStatuses' => array( self::ENABLED_STATUS, self::DISABLED_STATUS ),
+			'defaultStatus'    => $enabled_status,
+			'errorMessages'    => $error_messages,
+			'isWebsiteEnabled' => AMP_Options_Manager::is_website_experience_enabled(),
+			'isStoriesEnabled' => AMP_Options_Manager::is_stories_experience_enabled(),
+			'hasThemeSupport'  => current_theme_supports( AMP_Theme_Support::SLUG ),
+			'isStandardMode'   => amp_is_canonical(),
+		);
+
+		wp_localize_script(
+			self::BLOCK_ASSET_HANDLE,
+			'ampBlockEditor',
+			$data
 		);
 
 		if ( function_exists( 'wp_set_script_translations' ) ) {
 			wp_set_script_translations( self::BLOCK_ASSET_HANDLE, 'amp' );
-		} elseif ( function_exists( 'wp_get_jed_locale_data' ) ) {
-			$script_data['i18n'] = wp_get_jed_locale_data( 'amp' );
-		} elseif ( function_exists( 'gutenberg_get_jed_locale_data' ) ) {
-			$script_data['i18n'] = gutenberg_get_jed_locale_data( 'amp' );
-		}
+		} elseif ( function_exists( 'wp_get_jed_locale_data' ) || function_exists( 'gutenberg_get_jed_locale_data' ) ) {
+			$locale_data  = function_exists( 'wp_get_jed_locale_data' ) ? wp_get_jed_locale_data( 'amp' ) : gutenberg_get_jed_locale_data( 'amp' );
+			$translations = wp_json_encode( $locale_data );
 
-		wp_add_inline_script(
-			self::BLOCK_ASSET_HANDLE,
-			sprintf( 'var wpAmpEditor = %s;', wp_json_encode( $script_data ) ),
-			'before'
-		);
+			wp_add_inline_script(
+				self::BLOCK_ASSET_HANDLE,
+				'wp.i18n.setLocaleData( ' . $translations . ', "amp" );',
+				'after'
+			);
+		}
 	}
 
 	/**
@@ -236,7 +275,7 @@ class AMP_Post_Meta_Box {
 			return;
 		}
 
-		$status_and_errors = $this->get_status_and_errors( $post );
+		$status_and_errors = self::get_status_and_errors( $post );
 		$status            = $status_and_errors['status'];
 		$errors            = $status_and_errors['errors'];
 		$error_messages    = $this->get_error_messages( $status, $errors );
@@ -262,7 +301,7 @@ class AMP_Post_Meta_Box {
 	 *     @type string[]  $errors AMP errors.
 	 * }
 	 */
-	public function get_status_and_errors( $post ) {
+	public static function get_status_and_errors( $post ) {
 		/*
 		 * When theme support is present then theme templates can be served in AMP and we check first if the template is available.
 		 * Checking for template availability will include a check for get_support_errors. Otherwise, if theme support is not present
@@ -370,9 +409,9 @@ class AMP_Post_Meta_Box {
 	 */
 	public function preview_post_link( $link ) {
 		$is_amp = (
-			isset( $_POST['amp-preview'] ) // WPCS: CSRF ok.
+			isset( $_POST['amp-preview'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			&&
-			'do-preview' === sanitize_key( wp_unslash( $_POST['amp-preview'] ) ) // WPCS: CSRF ok.
+			'do-preview' === sanitize_key( wp_unslash( $_POST['amp-preview'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		);
 
 		if ( $is_amp ) {

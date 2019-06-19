@@ -53,20 +53,18 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	protected static $theme_features = array(
 		// Twenty Nineteen.
 		'twentynineteen'  => array(
-			'dequeue_scripts'                             => array(
+			'dequeue_scripts'                    => array(
 				'twentynineteen-skip-link-focus-fix', // This is part of AMP. See <https://github.com/ampproject/amphtml/issues/18671>.
 				'twentynineteen-priority-menu',
 				'twentynineteen-touch-navigation', // @todo There could be an AMP implementation of this, similar to what is implemented on ampproject.org.
 			),
-			'remove_actions'                              => array(
+			'remove_actions'                     => array(
 				'wp_print_footer_scripts' => array(
 					'twentynineteen_skip_link_focus_fix', // See <https://github.com/WordPress/twentynineteen/pull/47>.
 				),
 			),
-			'add_twentynineteen_masthead_styles'          => array(),
-			'add_twentynineteen_image_styles'             => array(),
-			'remove_twentynineteen_thumbnail_image_sizes' => array(),
-
+			'add_twentynineteen_masthead_styles' => array(),
+			'adjust_twentynineteen_images'       => array(),
 		),
 
 		// Twenty Seventeen.
@@ -77,7 +75,7 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 				'twentyseventeen-global', // There are somethings not yet implemented in AMP. See todos below.
 				'jquery-scrollto', // Implemented via add_smooth_scrolling().
 				'twentyseventeen-navigation', // Handled by add_nav_menu_styles, add_nav_menu_toggle, add_nav_sub_menu_buttons.
-				'twentyseventeen-skip-link-focus-fix', // Only needed by IE11 and when admin bar is present.
+				'twentyseventeen-skip-link-focus-fix', // Unnecessary since part of the AMP runtime.
 			),
 			'remove_actions'                      => array(
 				'wp_head' => array(
@@ -90,9 +88,10 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 			'add_twentyseventeen_image_styles'    => array(),
 			'add_twentyseventeen_sticky_nav_menu' => array(),
 			'add_has_header_video_body_class'     => array(),
-			'add_nav_menu_styles'                 => array(),
-			'add_nav_menu_toggle'                 => array(),
-			'add_nav_sub_menu_buttons'            => array(),
+			'add_nav_menu_styles'                 => array(
+				'sub_menu_button_toggle_class' => 'toggled-on',
+				'no_js_submenu_visible'        => true,
+			),
 			'add_smooth_scrolling'                => array(
 				'//header[@id = "masthead"]//a[ contains( @class, "menu-scroll-down" ) ]',
 			),
@@ -104,39 +103,78 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 		'twentysixteen'   => array(
 			// @todo Figure out an AMP solution for onResizeARIA().
 			// @todo Try to implement belowEntryMetaClass().
-			'dequeue_scripts'          => array(
+			'dequeue_scripts'     => array(
 				'twentysixteen-script',
 				'twentysixteen-html5', // Only relevant for IE<9.
 				'twentysixteen-keyboard-image-navigation', // AMP does not yet allow for listening to keydown events.
-				'twentysixteen-skip-link-focus-fix', // Only needed by IE11 and when admin bar is present.
+				'twentysixteen-skip-link-focus-fix', // Unnecessary since part of the AMP runtime.
 			),
-			'remove_actions'           => array(
+			'remove_actions'      => array(
 				'wp_head' => array(
 					'twentysixteen_javascript_detection', // AMP is essentially no-js, with any interactively added explicitly via amp-bind.
 				),
 			),
-			'add_nav_menu_styles'      => array(),
-			'add_nav_menu_toggle'      => array(),
-			'add_nav_sub_menu_buttons' => array(),
+			'add_nav_menu_styles' => array(
+				'sub_menu_button_toggle_class' => 'toggled-on',
+				'no_js_submenu_visible'        => true,
+			),
 		),
 
 		// Twenty Fifteen.
 		'twentyfifteen'   => array(
 			// @todo Figure out an AMP solution for onResizeARIA().
-			'dequeue_scripts'          => array(
+			'dequeue_scripts'     => array(
 				'twentyfifteen-script',
 				'twentyfifteen-keyboard-image-navigation', // AMP does not yet allow for listening to keydown events.
-				'twentyfifteen-skip-link-focus-fix', // Only needed by IE11 and when admin bar is present.
+				'twentyfifteen-skip-link-focus-fix', // Unnecessary since part of the AMP runtime.
 			),
-			'remove_actions'           => array(
+			'remove_actions'      => array(
 				'wp_head' => array(
 					'twentyfifteen_javascript_detection', // AMP is essentially no-js, with any interactively added explicitly via amp-bind.
 				),
 			),
-			'add_nav_menu_styles'      => array(),
+			'add_nav_menu_styles' => array(
+				'sub_menu_button_toggle_class' => 'toggle-on',
+				'no_js_submenu_visible'        => true,
+			),
+		),
+
+		// Twenty Fourteen.
+		'twentyfourteen'  => array(
+			// @todo Figure out an AMP solution for onResizeARIA().
+			'dequeue_scripts'                    => array(
+				'twentyfourteen-script',
+				'twentyfourteen-keyboard-image-navigation', // AMP does not yet allow for listening to keydown events.
+				'jquery-masonry', // Masonry style layout is not supported in AMP.
+				'twentyfourteen-slider',
+			),
+			'add_nav_menu_styles'                => array(),
+			'add_twentyfourteen_masthead_styles' => array(),
+			'add_twentyfourteen_slider_carousel' => array(),
+			'add_twentyfourteen_search'          => array(),
+		),
+
+		// Twenty Thirteen.
+		'twentythirteen'  => array(
+			'dequeue_scripts'          => array(
+				'jquery-masonry', // Masonry style layout is not supported in AMP.
+				'twentythirteen-script',
+			),
 			'add_nav_menu_toggle'      => array(),
 			'add_nav_sub_menu_buttons' => array(),
+			'add_nav_menu_styles'      => array(),
 		),
+
+		// Twenty Twelve.
+		'twentytwelve'    => array(
+			'dequeue_scripts'     => array(
+				'twentytwelve-navigation',
+			),
+			'add_nav_menu_styles' => array(),
+		),
+
+		'twentyeleven'    => array(),
+		'twentyten'       => array(),
 	);
 
 	/**
@@ -159,48 +197,152 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @return array Acceptable errors.
 	 */
 	public static function get_acceptable_errors( $template ) {
-		switch ( $template ) {
+		if ( isset( self::$theme_features[ $template ] ) ) {
+			return array(
+				'removed_unused_css_rules' => true,
+				'illegal_css_at_rule'      => array(
+					array(
+						'at_rule' => 'viewport',
+					),
+					array(
+						'at_rule' => '-ms-viewport',
+					),
+				),
+			);
+		}
+		return array();
+	}
+
+	/**
+	 * Adds extra theme support arguments on the fly.
+	 *
+	 * This method is neither a buffering hook nor a sanitization callback and is called manually by
+	 * {@see AMP_Theme_Support}. Typically themes will add theme support directly and don't need such
+	 * a method. In this case, it is a workaround for adding theme support on behalf of external themes.
+	 *
+	 * @since 1.1
+	 */
+	public static function extend_theme_support() {
+		$args = self::get_theme_support_args( get_template() );
+
+		if ( empty( $args ) ) {
+			return;
+		}
+
+		$support = AMP_Theme_Support::get_theme_support_args();
+		if ( ! is_array( $support ) ) {
+			$support = array();
+		}
+
+		add_theme_support( AMP_Theme_Support::SLUG, array_merge( $support, $args ) );
+	}
+
+	/**
+	 * Returns extra arguments to pass to `add_theme_support()`.
+	 *
+	 * @since 1.1
+	 *
+	 * @param string $theme Theme slug.
+	 * @return array Arguments to merge with existing theme support arguments.
+	 */
+	protected static function get_theme_support_args( $theme ) {
+		// phpcs:disable WordPress.WP.I18n.TextDomainMismatch
+		switch ( $theme ) {
+			case 'twentytwelve':
+				return array(
+					'nav_menu_toggle' => array(
+						'nav_container_xpath'        => '//nav[ @id = "site-navigation" ]//ul',
+						'nav_container_toggle_class' => 'toggled-on',
+						'menu_button_xpath'          => '//nav[ @id = "site-navigation" ]//button[ contains( @class, "menu-toggle" ) ]',
+						'menu_button_toggle_class'   => 'toggled-on',
+					),
+				);
+			case 'twentythirteen':
+				return array(
+					'nav_menu_toggle'   => array(
+						'nav_container_id'           => 'site-navigation',
+						'nav_container_toggle_class' => 'toggled-on',
+						'menu_button_xpath'          => '//nav[ @id = "site-navigation" ]//button[ contains( @class, "menu-toggle" ) ]',
+					),
+					'nav_menu_dropdown' => array(
+						'sub_menu_button_class'        => 'dropdown-toggle',
+						'sub_menu_button_toggle_class' => 'toggle-on',
+						'expand_text'                  => __( 'expand child menu', 'amp' ),
+						'collapse_text'                => __( 'collapse child menu', 'amp' ),
+					),
+					'nav_menu_styles'   => array(),
+				);
+			case 'twentyfourteen':
+				return array(
+					'nav_menu_toggle' => array(
+						'nav_container_id'           => 'primary-navigation',
+						'nav_container_toggle_class' => 'toggled-on',
+						'menu_button_xpath'          => '//header[ @id = "masthead" ]//button[ contains( @class, "menu-toggle" ) ]',
+						'menu_button_toggle_class'   => '',
+					),
+				);
+
 			case 'twentyfifteen':
 				return array(
-					'removed_unused_css_rules' => true,
-					'illegal_css_at_rule'      => array(
-						array(
-							'at_rule'         => 'viewport',
-							'node_attributes' => array(
-								'id' => 'twentyfifteen-style-css',
-							),
-						),
-						array(
-							'at_rule'         => '-ms-viewport',
-							'node_attributes' => array(
-								'id' => 'twentyfifteen-style-css',
-							),
-						),
+					'nav_menu_toggle'   => array(
+						'nav_container_id'           => 'secondary',
+						'nav_container_toggle_class' => 'toggled-on',
+						'menu_button_xpath'          => '//header[ @id = "masthead" ]//button[ contains( @class, "secondary-toggle" ) ]',
+						'menu_button_toggle_class'   => 'toggled-on',
+					),
+					'nav_menu_dropdown' => array(
+						'sub_menu_button_class'        => 'dropdown-toggle',
+						'sub_menu_button_toggle_class' => 'toggle-on',
+						'expand_text '                 => __( 'expand child menu', 'twentyfifteen' ),
+						'collapse_text'                => __( 'collapse child menu', 'twentyfifteen' ),
 					),
 				);
+
 			case 'twentysixteen':
 				return array(
-					'removed_unused_css_rules' => true,
-					'illegal_css_at_rule'      => array(
-						array(
-							'at_rule'         => 'viewport',
-							'node_attributes' => array(
-								'id' => 'twentysixteen-style-css',
-							),
-						),
-						array(
-							'at_rule'         => '-ms-viewport',
-							'node_attributes' => array(
-								'id' => 'twentysixteen-style-css',
-							),
-						),
+					'nav_menu_toggle'   => array(
+						'nav_container_id'           => 'site-header-menu',
+						'nav_container_toggle_class' => 'toggled-on',
+						'menu_button_xpath'          => '//header[@id = "masthead"]//button[ @id = "menu-toggle" ]',
+						'menu_button_toggle_class'   => 'toggled-on',
+					),
+					'nav_menu_dropdown' => array(
+						'sub_menu_button_class'        => 'dropdown-toggle',
+						'sub_menu_button_toggle_class' => 'toggled-on',
+						'expand_text '                 => __( 'expand child menu', 'twentysixteen' ),
+						'collapse_text'                => __( 'collapse child menu', 'twentysixteen' ),
 					),
 				);
+
 			case 'twentyseventeen':
-				return array(
-					'removed_unused_css_rules' => true,
+				$config = array(
+					'nav_menu_toggle'   => array(
+						'nav_container_id'           => 'site-navigation',
+						'nav_container_toggle_class' => 'toggled-on',
+						'menu_button_xpath'          => '//nav[@id = "site-navigation"]//button[ contains( @class, "menu-toggle" ) ]',
+						'menu_button_toggle_class'   => 'toggled-on',
+					),
+					'nav_menu_dropdown' => array(
+						'sub_menu_button_class'        => 'dropdown-toggle',
+						'sub_menu_button_toggle_class' => 'toggled-on',
+						'expand_text '                 => __( 'expand child menu', 'twentyseventeen' ),
+						'collapse_text'                => __( 'collapse child menu', 'twentyseventeen' ),
+					),
 				);
+
+				if ( function_exists( 'twentyseventeen_get_svg' ) ) {
+					$config['nav_menu_dropdown']['icon'] = twentyseventeen_get_svg(
+						array(
+							'icon'     => 'angle-down',
+							'fallback' => true,
+						)
+					);
+				}
+
+				return $config;
 		}
+		// phpcs:enable WordPress.WP.I18n.TextDomainMismatch
+
 		return array();
 	}
 
@@ -208,63 +350,18 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * Get theme config.
 	 *
 	 * @since 1.0
+	 * @deprecated 1.1
 	 *
 	 * @param string $theme Theme slug.
 	 * @return array Class names.
 	 */
 	protected static function get_theme_config( $theme ) {
-		// phpcs:disable WordPress.WP.I18n.TextDomainMismatch
-		$config = array(
-			'sub_menu_button_class' => 'dropdown-toggle',
-		);
-		switch ( $theme ) {
-			case 'twentyfifteen':
-				return array_merge(
-					$config,
-					array(
-						'nav_container_id'             => 'secondary',
-						'nav_container_toggle_class'   => 'toggled-on',
-						'menu_button_class'            => 'secondary-toggle',
-						'menu_button_xpath'            => '//header[ @id = "masthead" ]//button[ contains( @class, "secondary-toggle" ) ]',
-						'menu_button_toggle_class'     => 'toggled-on',
-						'sub_menu_button_toggle_class' => 'toggle-on',
-						'expand_text '                 => __( 'expand child menu', 'twentyfifteen' ),
-						'collapse_text'                => __( 'collapse child menu', 'twentyfifteen' ),
-					)
-				);
+		_deprecated_function( __METHOD__, '1.1' );
 
-			case 'twentysixteen':
-				return array_merge(
-					$config,
-					array(
-						'nav_container_id'             => 'site-header-menu',
-						'nav_container_toggle_class'   => 'toggled-on',
-						'menu_button_class'            => 'menu-toggle',
-						'menu_button_xpath'            => '//header[@id = "masthead"]//button[ @id = "menu-toggle" ]',
-						'menu_button_toggle_class'     => 'toggled-on',
-						'sub_menu_button_toggle_class' => 'toggled-on',
-						'expand_text '                 => __( 'expand child menu', 'twentysixteen' ),
-						'collapse_text'                => __( 'collapse child menu', 'twentysixteen' ),
-					)
-				);
+		$args = self::get_theme_support_args( $theme );
 
-			case 'twentyseventeen':
-			default:
-				return array_merge(
-					$config,
-					array(
-						'nav_container_id'             => 'site-navigation',
-						'nav_container_toggle_class'   => 'toggled-on',
-						'menu_button_class'            => 'menu-toggle',
-						'menu_button_xpath'            => '//nav[@id = "site-navigation"]//button[ contains( @class, "menu-toggle" ) ]',
-						'menu_button_toggle_class'     => 'toggled-on',
-						'sub_menu_button_toggle_class' => 'toggled-on',
-						'expand_text '                 => __( 'expand child menu', 'twentyseventeen' ),
-						'collapse_text'                => __( 'collapse child menu', 'twentyseventeen' ),
-					)
-				);
-		}
-		// phpcs:enable WordPress.WP.I18n.TextDomainMismatch
+		// This returns arguments in a backward-compatible way.
+		return array_merge( $args['nav_menu_toggle'], $args['nav_menu_dropdown'] );
 	}
 
 	/**
@@ -333,36 +430,19 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @link https://github.com/WordPress/wordpress-develop/blob/f4580c122b7d0d2d66d22f806c6fe6e11023c6f0/src/wp-content/themes/twentyseventeen/assets/js/global.js#L105-L108
 	 */
 	public static function set_twentyseventeen_quotes_icon() {
-		add_filter( 'the_content', function ( $content ) {
+		add_filter(
+			'the_content',
+			function ( $content ) {
 
-			// Why isn't Twenty Seventeen doing this to begin with? Why is it using JS to add the quote icon?
-			if ( function_exists( 'twentyseventeen_get_svg' ) && 'quote' === get_post_format() ) {
-				$icon    = twentyseventeen_get_svg( array( 'icon' => 'quote-right' ) );
-				$content = preg_replace( '#(<blockquote.*?>)#s', '$1' . $icon, $content );
+				// Why isn't Twenty Seventeen doing this to begin with? Why is it using JS to add the quote icon?
+				if ( function_exists( 'twentyseventeen_get_svg' ) && 'quote' === get_post_format() ) {
+					$icon    = twentyseventeen_get_svg( array( 'icon' => 'quote-right' ) );
+					$content = preg_replace( '#(<blockquote.*?>)#s', '$1' . $icon, $content );
+				}
+
+				return $content;
 			}
-
-			return $content;
-		} );
-	}
-
-	/**
-	 * Remove the sizes attribute from thumbnail images in Twenty Nineteen.
-	 *
-	 * The AMP runtime sets an inline style on an <amp-img> based on the sizes attribute if it's present.
-	 * For example, <amp-img style="width:calc(50vw)">.
-	 * Removing the 'sizes' attribute isn't ideal, but it looks like it's not possible to override that inline style.
-	 *
-	 * @todo: remove when this is resolved: https://github.com/ampproject/amphtml/issues/17053
-	 * @since 1.0
-	 */
-	public static function remove_twentynineteen_thumbnail_image_sizes() {
-		add_filter( 'wp_get_attachment_image_attributes', function( $attr ) {
-			if ( isset( $attr['class'] ) && false !== strpos( $attr['class'], 'attachment-post-thumbnail' ) ) {
-				unset( $attr['sizes'] );
-			}
-
-			return $attr;
-		}, 11 );
+		);
 	}
 
 	/**
@@ -374,55 +454,31 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @link https://github.com/WordPress/wordpress-develop/blob/ddc8f803c6e99118998191fd2ea24124feb53659/src/wp-content/themes/twentyseventeen/functions.php#L545:L554
 	 */
 	public static function add_twentyseventeen_attachment_image_attributes() {
-		add_filter( 'wp_get_attachment_image_attributes', function ( $attr, $attachment, $size ) {
-			if (
-				isset( $attr['class'] )
-				&&
-				(
-					'custom-logo' === $attr['class']
-					||
-					false !== strpos( $attr['class'], 'attachment-twentyseventeen-featured-image' )
-				)
-			) {
-				/*
-				 * The AMP runtime sets an inline style on an <amp-img> based on the sizes attribute if it's present.
-				 * For example, <amp-img style="width:100%">.
-				 * Removing the 'sizes' attribute is only a workaround, as it looks like it's not possible to override that inline style.
-				 *
-				 * @todo: remove when this is resolved: https://github.com/ampproject/amphtml/issues/17053
-				 */
-				unset( $attr['sizes'] );
-			} elseif ( is_attachment() ) {
-				$sizes = wp_get_attachment_image_sizes( $attachment->ID, $size );
-				if ( false !== $sizes ) {
-					$attr['sizes'] = $sizes;
-				}
-			}
-			return $attr;
-		}, 11, 3 );
-
 		/*
 		 * The max-height of the `.custom-logo-link img` is defined as being 80px, unless
 		 * there is header media in which case it is 200px. Issues related to vertically-squashed
 		 * images can be avoided if we just make sure that the image has this height to begin with.
 		 */
-		add_filter( 'get_custom_logo', function( $html ) {
-			$src = wp_get_attachment_image_src( get_theme_mod( 'custom_logo' ), 'full' );
-			if ( ! $src ) {
+		add_filter(
+			'get_custom_logo',
+			function( $html ) {
+				$src = wp_get_attachment_image_src( get_theme_mod( 'custom_logo' ), 'full' );
+				if ( ! $src ) {
+					return $html;
+				}
+
+				if ( 'blank' === get_header_textcolor() && has_custom_header() ) {
+					$height = 200;
+				} else {
+					$height = 80;
+				}
+				$width = $height * ( $src[1] / $src[2] ); // Note that float values are allowed.
+
+				$html = preg_replace( '/(?<=width=")\d+(?=")/', $width, $html );
+				$html = preg_replace( '/(?<=height=")\d+(?=")/', $height, $html );
 				return $html;
 			}
-
-			if ( 'blank' === get_header_textcolor() && has_custom_header() ) {
-				$height = 200;
-			} else {
-				$height = 80;
-			}
-			$width = $height * ( $src[1] / $src[2] ); // Note that float values are allowed.
-
-			$html = preg_replace( '/(?<=width=")\d+(?=")/', $width, $html );
-			$html = preg_replace( '/(?<=height=")\d+(?=")/', $height, $html );
-			return $html;
-		} );
+		);
 	}
 
 	/**
@@ -454,11 +510,15 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @param string[] $handles Handles, where each item value is the script handle.
 	 */
 	public static function dequeue_scripts( $handles = array() ) {
-		add_action( 'wp_enqueue_scripts', function() use ( $handles ) {
-			foreach ( $handles as $handle ) {
-				wp_dequeue_script( $handle );
-			}
-		}, PHP_INT_MAX );
+		add_action(
+			'wp_enqueue_scripts',
+			function() use ( $handles ) {
+				foreach ( $handles as $handle ) {
+					wp_dequeue_script( $handle );
+				}
+			},
+			PHP_INT_MAX
+		);
 	}
 
 	/**
@@ -551,12 +611,15 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 			$args
 		);
 
-		add_filter( 'body_class', function( $body_classes ) use ( $args ) {
-			if ( has_header_video() ) {
-				$body_classes[] = $args['class_name'];
+		add_filter(
+			'body_class',
+			function( $body_classes ) use ( $args ) {
+				if ( has_header_video() ) {
+					$body_classes[] = $args['class_name'];
+				}
+				return $body_classes;
 			}
-			return $body_classes;
-		} );
+		);
 	}
 
 	/**
@@ -582,39 +645,43 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @since 1.0
 	 */
 	public static function add_twentynineteen_masthead_styles() {
-		add_action( 'wp_enqueue_scripts', function() {
-			ob_start();
-			?>
-			<style>
-			.site-header.featured-image .site-featured-image .post-thumbnail amp-img > img {
-				height: auto;
-				left: 50%;
-				max-width: 1000%;
-				min-height: 100%;
-				min-width: 100vw;
-				position: absolute;
-				top: 50%;
-				transform: translateX(-50%) translateY(-50%);
-				width: auto;
-				z-index: 1;
-				/* When image filters are active, make it grayscale to colorize it blue. */
-			}
-
-			@supports (object-fit: cover) {
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				ob_start();
+				?>
+				<style>
 				.site-header.featured-image .site-featured-image .post-thumbnail amp-img > img {
-					height: 100%;
-					left: 0;
-					object-fit: cover;
-					top: 0;
-					transform: none;
-					width: 100%;
+					height: auto;
+					left: 50%;
+					max-width: 1000%;
+					min-height: 100%;
+					min-width: 100vw;
+					position: absolute;
+					top: 50%;
+					transform: translateX(-50%) translateY(-50%);
+					width: auto;
+					z-index: 1;
+					/* When image filters are active, make it grayscale to colorize it blue. */
 				}
-			}
-			</style>
-			<?php
-			$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
-			wp_add_inline_style( get_template() . '-style', $styles );
-		}, 11 );
+
+				@supports (object-fit: cover) {
+					.site-header.featured-image .site-featured-image .post-thumbnail amp-img > img {
+						height: 100%;
+						left: 0;
+						object-fit: cover;
+						top: 0;
+						transform: none;
+						width: 100%;
+					}
+				}
+				</style>
+				<?php
+				$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
+				wp_add_inline_style( get_template() . '-style', $styles );
+			},
+			11
+		);
 	}
 
 	/**
@@ -627,18 +694,18 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @link https://github.com/WordPress/wordpress-develop/blob/1af1f65a21a1a697fb5f33027497f9e5ae638453/src/wp-content/themes/twentyseventeen/style.css#L1743
 	 */
 	public static function add_twentyseventeen_masthead_styles() {
-		$args = self::get_theme_config( get_template() );
-
 		/*
 		 * The following is necessary because the styles in the theme apply to img and video,
 		 * and the CSS parser will then convert the selectors to amp-img and amp-video respectively.
 		 * Nevertheless, object-fit does not apply on amp-img and it needs to apply on an actual img.
 		 */
-		add_action( 'wp_enqueue_scripts', function() use ( $args ) {
-			$is_front_page_layout = ( is_front_page() && 'posts' !== get_option( 'show_on_front' ) ) || ( is_home() && is_front_page() );
-			ob_start();
-			?>
-			<style>
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				$is_front_page_layout = ( is_front_page() && 'posts' !== get_option( 'show_on_front' ) ) || ( is_home() && is_front_page() );
+				ob_start();
+				?>
+				<style>
 				.has-header-image .custom-header-media amp-img > img,
 				.has-header-video .custom-header-media amp-video > video{
 					position: fixed;
@@ -714,11 +781,13 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 						display: block;
 					}
 				}
-			</style>
-			<?php
-			$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
-			wp_add_inline_style( get_template() . '-style', $styles );
-		}, 11 );
+				</style>
+				<?php
+				$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
+				wp_add_inline_style( get_template() . '-style', $styles );
+			},
+			11
+		);
 	}
 
 	/**
@@ -729,10 +798,12 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @link https://github.com/WordPress/wordpress-develop/blob/1af1f65a21a1a697fb5f33027497f9e5ae638453/src/wp-content/themes/twentyseventeen/style.css#L2100
 	 */
 	public static function add_twentyseventeen_image_styles() {
-		add_action( 'wp_enqueue_scripts', function() {
-			ob_start();
-			?>
-			<style>
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				ob_start();
+				?>
+				<style>
 				/* Override the display: block in twentyseventeen/style.css, as <amp-img> is usually inline-block. */
 				.single-featured-image-header amp-img {
 					display: inline-block;
@@ -742,11 +813,13 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 				.single-featured-image-header {
 					text-align: center;
 				}
-			</style>
-			<?php
-			$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
-			wp_add_inline_style( get_template() . '-style', $styles );
-		}, 11 );
+				</style>
+				<?php
+				$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
+				wp_add_inline_style( get_template() . '-style', $styles );
+			},
+			11
+		);
 	}
 
 	/**
@@ -766,6 +839,7 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 		 * Elements.
 		 *
 		 * @var DOMElement $link
+		 * @var DOMElement $element
 		 * @var DOMElement $navigation_top
 		 * @var DOMElement $navigation_top_fixed
 		 */
@@ -783,14 +857,20 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 		}
 
 		$navigation_top->parentNode->insertBefore( $navigation_top_fixed, $navigation_top->nextSibling );
+		foreach ( $this->xpath->query( './/*[ @id ]', $navigation_top_fixed ) as $element ) {
+			$element->setAttribute( 'id', $element->getAttribute( 'id' ) . '-fixed' );
+		}
 
 		$attributes = array(
 			'layout'              => 'nodisplay',
 			'intersection-ratios' => 1,
-			'on'                  => implode( ';', array(
-				'exit:navigationTopShow.start',
-				'enter:navigationTopHide.start',
-			) ),
+			'on'                  => implode(
+				';',
+				array(
+					'exit:navigationTopShow.start',
+					'enter:navigationTopHide.start',
+				)
+			),
 		);
 		if ( is_admin_bar_showing() ) {
 			$attributes['viewport-margins'] = '32px 0';
@@ -826,10 +906,14 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 		);
 
 		foreach ( $animations as $animation_id => $animation ) {
-			$amp_animation   = AMP_DOM_Utils::create_node( $this->dom, 'amp-animation', array(
-				'id'     => $animation_id,
-				'layout' => 'nodisplay',
-			) );
+			$amp_animation   = AMP_DOM_Utils::create_node(
+				$this->dom,
+				'amp-animation',
+				array(
+					'id'     => $animation_id,
+					'layout' => 'nodisplay',
+				)
+			);
 			$position_script = $this->dom->createElement( 'script' );
 			$position_script->setAttribute( 'type', 'application/json' );
 			$position_script->appendChild( $this->dom->createTextNode( wp_json_encode( $animation ) ) );
@@ -846,39 +930,43 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 	 * @param array $args Args.
 	 */
 	public static function add_nav_menu_styles( $args = array() ) {
-		$args = array_merge(
-			self::get_theme_config( get_template() ),
-			$args
-		);
+		add_action(
+			'wp_enqueue_scripts',
+			function() use ( $args ) {
+				ob_start();
+				?>
+				<style>
+				<?php if ( ! empty( $args['no_js_submenu_visible'] ) ) : ?>
+					/* Override no-js selector in parent theme. */
+					<?php
+					$selector = is_string( $args['no_js_submenu_visible'] ) ? $args['no_js_submenu_visible'] : '.no-js .main-navigation ul ul';
+					?>
+					<?php echo esc_html( $selector ); ?> {
+						display: none;
+					}
+				<?php endif; ?>
 
-		add_action( 'wp_enqueue_scripts', function() use ( $args ) {
-			ob_start();
-			?>
-			<style>
-				/* Override no-js selector in parent theme. */
-				.no-js .main-navigation ul ul {
-					display: none;
-				}
-
-				/* Use sibling selector and re-use class on button instead of toggling toggle-on class on ul.sub-menu */
-				.main-navigation ul .<?php echo esc_html( $args['sub_menu_button_toggle_class'] ); ?> + .sub-menu {
-					display: block;
-				}
+				<?php if ( ! empty( $args['sub_menu_button_toggle_class'] ) ) : ?>
+					/* Use sibling selector and re-use class on button instead of toggling toggle-on class on ul.sub-menu */
+					.main-navigation ul .<?php echo esc_html( $args['sub_menu_button_toggle_class'] ); ?> + .sub-menu {
+						display: block;
+					}
+				<?php endif; ?>
 
 				<?php if ( 'twentyseventeen' === get_template() ) : ?>
 					/* Show the button*/
-					.no-js .<?php echo esc_html( $args['menu_button_class'] ); ?> {
+					.no-js .menu-toggle {
 						display: block;
 					}
 					.no-js .main-navigation > div > ul {
 						display: none;
 					}
-					.no-js .main-navigation.<?php echo esc_html( $args['nav_container_toggle_class'] ); ?> > div > ul {
+					.no-js .main-navigation.toggled-on > div > ul {
 						display: block;
 					}
 					@media screen and (min-width: 48em) {
-						.no-js .<?php echo esc_html( $args['menu_button_class'] ); ?>,
-						.no-js .<?php echo esc_html( $args['sub_menu_button_class'] ); ?> {
+						.no-js .menu-toggle,
+						.no-js .dropdown-toggle {
 							display: none;
 						}
 						.no-js .main-navigation ul,
@@ -930,7 +1018,7 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 				<?php elseif ( 'twentysixteen' === get_template() ) : ?>
 					@media screen and (max-width: 56.875em) {
 						/* Show the button*/
-						.no-js .<?php echo esc_html( $args['menu_button_class'] ); ?> {
+						.no-js .menu-toggle {
 							display: block;
 						}
 						.no-js .site-header-menu {
@@ -977,185 +1065,454 @@ class AMP_Core_Theme_Sanitizer extends AMP_Base_Sanitizer {
 						}
 					}
 
+				<?php elseif ( 'twentyfourteen' === get_template() ) : ?>
+					@media screen and (min-width: 783px) {
+						.primary-navigation li:focus-within > a {
+							background-color: #24890d;
+							color: #fff;
+						}
+
+						.primary-navigation ul ul li:focus-within > a {
+							background-color: #41a62a;
+						}
+
+						.primary-navigation ul li:focus-within > ul {
+							left: auto;
+						}
+
+						.primary-navigation ul ul li:focus-within > ul {
+							left: 100%;
+						}
+					}
+
+					@media screen and (min-width: 1008px) {
+						.secondary-navigation li:focus-within > a {
+							background-color: #24890d;
+							color: #fff;
+						}
+
+						.secondary-navigation ul ul li:focus-within > a {
+							background-color: #41a62a;
+						}
+
+						.secondary-navigation ul li:focus-within > ul {
+							left: 202px;
+						}
+					}
+
+				<?php elseif ( 'twentythirteen' === get_template() ) : ?>
+					@media (min-width: 644px) {
+						.dropdown-toggle {
+							display: none;
+						}
+						ul.nav-menu :focus-within > ul,
+						.nav-menu :focus-within > ul {
+							clip: inherit;
+							overflow: inherit;
+							height: inherit;
+							width: inherit;
+						}
+					}
+					@media (max-width: 643px) {
+						.nav-menu .toggle-on + .sub-menu {
+							clip: inherit;
+							overflow: inherit;
+							height: inherit;
+							width: inherit;
+						}
+						/* Override :hover selector rules in theme which would cause submenu to persist open. */
+						ul.nav-menu li:hover button:not( .toggle-on ) +  ul,
+						.nav-menu ul li:hover button:not( .toggle-on ) +  ul {
+							height: 1px;
+							width: 1px;
+							overflow: hidden;
+							clip: rect(1px, 1px, 1px, 1px);
+						}
+						.menu-item-has-children {
+							position: relative;
+						}
+						.dropdown-toggle {
+							-moz-osx-font-smoothing: grayscale;
+							-webkit-font-smoothing: antialiased;
+							display: inline-block;
+							font-size: 16px;
+							font-style: normal;
+							font-weight: normal;
+							font-variant: normal;
+							line-height: 1;
+							text-align: center;
+							text-decoration: inherit;
+							text-transform: none;
+							vertical-align: top;
+							border: 0;
+							box-sizing: content-box;
+							content: "";
+							height: 42px;
+							padding: 0;
+							background: transparent;
+							width: 42px;
+							position: absolute;
+							top: 3px;
+							<?php if ( is_rtl() ) : ?>
+								left: 0;
+							<?php else : ?>
+								right: 0;
+							<?php endif; ?>
+						}
+						.dropdown-toggle:active,
+						.dropdown-toggle:focus,
+						.dropdown-toggle:hover {
+							padding: 0;
+							border: 0;
+							background: transparent;
+						}
+						.dropdown-toggle:after {
+							color: #333;
+							speak: none;
+							font-family: "Genericons";
+							content: "\f431";
+							font-size: 24px;
+							line-height: 42px;
+							position: relative;
+							top: 0;
+							width: 42px;
+							<?php if ( is_rtl() ) : ?>
+								left: 1px;
+							<?php else : ?>
+								right: 1px;
+							<?php endif; ?>
+						}
+						.dropdown-toggle.toggle-on:after {
+							content: "\f432";
+						}
+						.dropdown-toggle:hover,
+						.dropdown-toggle:focus {
+							background-color: rgba(51, 51, 51, 0.1);
+
+						.dropdown-toggle:focus {
+							outline: 1px solid rgba(51, 51, 51, 0.3);
+						}
+					}
+
+				<?php elseif ( 'twentytwelve' === get_template() ) : ?>
+					@media screen and (min-width: 600px) {
+						.main-navigation .menu-item-has-children:focus-within > ul {
+							border-left: 0;
+							clip: inherit;
+							overflow: inherit;
+							height: inherit;
+							width: inherit;
+						}
+					}
+
 				<?php endif; ?>
-			</style>
-			<?php
-			$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
-			wp_add_inline_style( get_template() . '-style', $styles );
-		}, 11 );
+				</style>
+				<?php
+				$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
+				wp_add_inline_style( get_template() . '-style', $styles );
+			},
+			11
+		);
 	}
 
 	/**
-	 * Ensure that JS-only nav menu styles apply to AMP as well since even though scripts are not allowed, there are AMP-bind implementations.
+	 * Adjust images in twentynineteen.
 	 *
-	 * @since 1.0
-	 *
-	 * @param array $args Args.
+	 * @since 1.1
 	 */
-	public function add_nav_menu_toggle( $args = array() ) {
-		$args = array_merge(
-			self::get_theme_config( get_template() ),
-			$args
-		);
+	public static function adjust_twentynineteen_images() {
 
-		$nav_el    = $this->dom->getElementById( $args['nav_container_id'] );
-		$button_el = $this->xpath->query( $args['menu_button_xpath'] )->item( 0 );
-		if ( ! $nav_el ) {
-			if ( $button_el ) {
-
-				// Remove the button since it won't be used.
-				$button_el->parentNode->removeChild( $button_el );
+		// Make sure the featured image gets responsive layout.
+		add_filter(
+			'wp_get_attachment_image_attributes',
+			function( $attributes ) {
+				if ( preg_match( '/(^|\s)(attachment-post-thumbnail)(\s|$)/', $attributes['class'] ) ) {
+					$attributes['data-amp-layout'] = 'responsive';
+				}
+				return $attributes;
 			}
+		);
+	}
+
+	/**
+	 * Add styles for Twenty Fourteen masthead.
+	 *
+	 * @since 1.1
+	 */
+	public static function add_twentyfourteen_masthead_styles() {
+		add_action(
+			'wp_enqueue_scripts',
+			function() {
+				ob_start();
+				?>
+				<style>
+					/* Styles for featured content */
+					.grid #featured-content .post-thumbnail,
+					.slider #featured-content .post-thumbnail {
+						padding-top: 0; /* Override responsive hack which is handled by AMP layout. */
+						overflow: visible;
+					}
+					.featured-content .post-thumbnail amp-img {
+						position: static;
+						left: auto;
+						top: auto;
+					}
+					.slider #featured-content .hentry {
+						display: block;
+					}
+
+					/*
+					 * The following are needed because clicking on the :before pseudo element does not trigger a tap event.
+					 * So instead of positioning the screen reader text off screen, we just position it to cover cover the
+					 * toggle button entirely, with a zero opacity.
+					 */
+					.search-toggle {
+						position: relative;
+					}
+					.search-toggle > a.screen-reader-text {
+						left: 0;
+						top: 0;
+						right: 0;
+						bottom: 0;
+						width: auto;
+						height: auto;
+						clip: unset;
+						opacity: 0;
+					}
+
+					<?php if ( 'slider' === get_theme_mod( 'featured_content_layout' ) ) : ?>
+
+						/*
+						 * Styles for slider carousel.
+						 */
+						.featured-content-inner > amp-carousel {
+							position: relative;
+						}
+						body.slider amp-carousel > .amp-carousel-button {
+							-webkit-font-smoothing: antialiased;
+							background-color: black;
+							background-image: none;
+							border-radius: 0;
+							border-color: #fff;
+							border-style: solid;
+							border-width: 2px 1px 0 0;
+							box-sizing: border-box;
+							cursor: pointer;
+							display: inline-block;
+							font: normal 16px/1 Genericons;
+							height: 48px;
+							left: auto;
+							opacity: 1;
+							text-align: center;
+							text-decoration: inherit;
+							top: auto;
+							width: 50%;
+							transform: none;
+						}
+						body.slider amp-carousel > .amp-carousel-button:focus {
+							outline: white thin dotted;
+						}
+						body.slider amp-carousel > .amp-carousel-button:hover {
+							background-color: #24890d;
+							outline: none;
+						}
+						body.slider amp-carousel > .amp-carousel-button-prev:before {
+							color: #fff;
+							content: "\f430";
+							font-size: 32px;
+							line-height: 46px;
+						}
+						body.slider amp-carousel > .amp-carousel-button-next:before {
+							color: #fff;
+							content: "\f429";
+							font-size: 32px;
+							line-height: 46px;
+						}
+						.featured-content .post-thumbnail amp-img > img {
+							object-fit: cover;
+							object-position: top;
+						}
+
+						@media screen and (max-width: 672px) {
+							.slider-control-paging {
+								float: none;
+								margin: 0;
+							}
+							.featured-content .post-thumbnail amp-img {
+								height: 55.49132947vw;
+							}
+							.slider-control-paging li {
+								display: inline-block;
+								float: none;
+							}
+						}
+						@media screen and (min-width: 673px) {
+							body.slider amp-carousel > .amp-carousel-button {
+								width: 48px;
+								border: 0;
+								bottom: 0;
+							}
+							body.slider amp-carousel > .amp-carousel-button-prev {
+								right: 50px;
+							}
+							body.slider amp-carousel > .amp-carousel-button-next {
+								right: 0;
+							}
+						}
+
+					<?php endif; ?>
+				</style>
+				<?php
+				$css = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
+
+				wp_add_inline_style( 'twentyfourteen-style', $css );
+			},
+			11
+		);
+	}
+
+	/**
+	 * Add amp-carousel for slider in Twenty Fourteen.
+	 *
+	 * @since 1.1
+	 */
+	public function add_twentyfourteen_slider_carousel() {
+		if ( 'slider' !== get_theme_mod( 'featured_content_layout' ) ) {
 			return;
 		}
 
-		if ( ! $button_el ) {
+		$featured_content = $this->dom->getElementById( 'featured-content' );
+		if ( ! $featured_content ) {
 			return;
 		}
 
-		$state_id = 'navMenuToggledOn';
-		$expanded = false;
+		$featured_content_inner = $this->xpath->query( './div[ @class = "featured-content-inner" ]', $featured_content )->item( 0 );
+		if ( ! $featured_content_inner ) {
+			return;
+		}
 
-		$nav_el->setAttribute(
-			AMP_DOM_Utils::get_amp_bind_placeholder_prefix() . 'class',
-			sprintf(
-				"%s + ( $state_id ? %s : '' )",
-				wp_json_encode( $nav_el->getAttribute( 'class' ) ),
-				wp_json_encode( ' ' . $args['nav_container_toggle_class'] )
+		$selected_slide_default  = 0;
+		$selected_slide_state_id = 'twentyFourteenSelectedSlide';
+
+		// Create the slider state.
+		$amp_state = $this->dom->createElement( 'amp-state' );
+		$amp_state->setAttribute( 'id', $selected_slide_state_id );
+		$script = $this->dom->createElement( 'script' );
+		$script->setAttribute( 'type', 'application/json' );
+		$script->appendChild( $this->dom->createTextNode( wp_json_encode( $selected_slide_default ) ) );
+		$amp_state->appendChild( $script );
+		$featured_content->appendChild( $amp_state );
+
+		// Create the carousel slider.
+		$amp_carousel_desktop_id = 'twentyFourteenSliderDesktop';
+		$amp_carousel_mobile_id  = 'twentyFourteenSliderMobile';
+		$amp_carousel_attributes = array(
+			'layout'              => 'responsive',
+			'on'                  => "slideChange:AMP.setState( { $selected_slide_state_id: event.index } )",
+			'width'               => '100',
+			'type'                => 'slides',
+			'loop'                => '',
+			'data-amp-bind-slide' => $selected_slide_state_id,
+		);
+		$amp_carousel_desktop    = AMP_DOM_Utils::create_node(
+			$this->dom,
+			'amp-carousel',
+			array_merge(
+				$amp_carousel_attributes,
+				array(
+					'id'     => $amp_carousel_desktop_id,
+					'media'  => '(min-width: 672px)',
+					'height' => '55.49132947', // Value comes from <https://github.com/WordPress/wordpress-develop/blob/fc2a8f0e11316d066a686995b8578d82cd5546cf/src/wp-content/themes/twentyfourteen/style.css#L3024>.
+				)
+			)
+		);
+		$amp_carousel_mobile     = AMP_DOM_Utils::create_node(
+			$this->dom,
+			'amp-carousel',
+			array_merge(
+				$amp_carousel_attributes,
+				array(
+					'id'     => $amp_carousel_mobile_id,
+					'media'  => '(max-width: 672px)',
+					'height' => '73',
+				)
 			)
 		);
 
-		$state_el = $this->dom->createElement( 'amp-state' );
-		$state_el->setAttribute( 'id', $state_id );
-		$script_el = $this->dom->createElement( 'script' );
-		$script_el->setAttribute( 'type', 'application/json' );
-		$script_el->appendChild( $this->dom->createTextNode( wp_json_encode( $expanded ) ) );
-		$state_el->appendChild( $script_el );
-		$nav_el->parentNode->insertBefore( $state_el, $nav_el );
-
-		$button_on = sprintf( "tap:AMP.setState({ $state_id: ! $state_id })" );
-		$button_el->setAttribute( 'on', $button_on );
-		$button_el->setAttribute( 'aria-expanded', 'false' );
-		$button_el->setAttribute( AMP_DOM_Utils::get_amp_bind_placeholder_prefix() . 'aria-expanded', "$state_id ? 'true' : 'false'" );
-		$button_el->setAttribute(
-			AMP_DOM_Utils::get_amp_bind_placeholder_prefix() . 'class',
-			sprintf( "%s + ( $state_id ? %s : '' )", wp_json_encode( $button_el->getAttribute( 'class' ) ), wp_json_encode( ' ' . $args['menu_button_toggle_class'] ) )
-		);
-	}
-
-	/**
-	 * Add buttons for nav sub-menu items.
-	 *
-	 * @since 1.0
-	 * @link https://github.com/WordPress/wordpress-develop/blob/a26c24226c6b131a0ed22c722a836c100d3ba254/src/wp-content/themes/twentyseventeen/assets/js/navigation.js#L11-L43
-	 *
-	 * @param array $args Args.
-	 */
-	public static function add_nav_sub_menu_buttons( $args = array() ) {
-		$default_args = self::get_theme_config( get_template() );
-		switch ( get_template() ) {
-			case 'twentyseventeen':
-				if ( function_exists( 'twentyseventeen_get_svg' ) ) {
-					$default_args['icon'] = twentyseventeen_get_svg( array(
-						'icon'     => 'angle-down',
-						'fallback' => true,
-					) );
-				}
-				break;
+		while ( $featured_content_inner->firstChild ) {
+			$node = $featured_content_inner->removeChild( $featured_content_inner->firstChild );
+			$amp_carousel_desktop->appendChild( $node );
+			$amp_carousel_mobile->appendChild( $node->cloneNode( true ) );
 		}
-		$args = array_merge( $default_args, $args );
+		$featured_content_inner->appendChild( $amp_carousel_desktop );
+		$featured_content_inner->appendChild( $amp_carousel_mobile );
 
-		/**
-		 * Filter the HTML output of a nav menu item to add the AMP dropdown button to reveal the sub-menu.
-		 *
-		 * @see twentyfifteen_amp_setup_hooks()
-		 *
-		 * @param string $item_output Nav menu item HTML.
-		 * @param object $item        Nav menu item.
-		 * @return string Modified nav menu item HTML.
-		 */
-		add_filter( 'walker_nav_menu_start_el', function( $item_output, $item, $depth, $nav_menu_args ) use ( $args ) {
-			unset( $depth );
-
-			// Skip adding buttons to nav menu widgets for now.
-			if ( empty( $nav_menu_args->theme_location ) ) {
-				return $item_output;
+		// Create the selector.
+		$amp_selector = $this->dom->createElement( 'amp-selector' );
+		$amp_selector->setAttribute( 'layout', 'container' );
+		$slider_control_nav = $this->dom->createElement( 'ol' );
+		$slider_control_nav->setAttribute( 'class', 'slider-control-nav slider-control-paging' );
+		$count = $amp_carousel_desktop->getElementsByTagName( 'article' )->length;
+		for ( $i = 0; $i < $count; $i++ ) {
+			$li = $this->dom->createElement( 'li' );
+			$a  = $this->dom->createElement( 'a' );
+			if ( $selected_slide_default === $i ) {
+				$li->setAttribute( 'selected', '' );
+				$a->setAttribute( 'class', 'slider-active' );
 			}
-
-			if ( ! in_array( 'menu-item-has-children', $item->classes, true ) ) {
-				return $item_output;
-			}
-			static $nav_menu_item_number = 0;
-			$nav_menu_item_number++;
-
-			$expanded = in_array( 'current-menu-ancestor', $item->classes, true );
-
-			$expanded_state_id = 'navMenuItemExpanded' . $nav_menu_item_number;
-
-			// Create new state for managing storing the whether the sub-menu is expanded.
-			$item_output .= sprintf(
-				'<amp-state id="%s"><script type="application/json">%s</script></amp-state>',
-				esc_attr( $expanded_state_id ),
-				wp_json_encode( $expanded )
-			);
-
-			$dropdown_button  = '<button';
-			$dropdown_button .= sprintf(
-				' class="%s" [class]="%s"',
-				esc_attr( $args['sub_menu_button_class'] . ( $expanded ? ' ' . $args['sub_menu_button_toggle_class'] : '' ) ),
-				esc_attr( sprintf( "%s + ( $expanded_state_id ? %s : '' )", wp_json_encode( $args['sub_menu_button_class'] ), wp_json_encode( ' ' . $args['sub_menu_button_toggle_class'] ) ) )
-			);
-			$dropdown_button .= sprintf(
-				' aria-expanded="%s" [aria-expanded]="%s"',
-				esc_attr( wp_json_encode( $expanded ) ),
-				esc_attr( "$expanded_state_id ? 'true' : 'false'" )
-			);
-			$dropdown_button .= sprintf(
-				' on="%s"',
-				esc_attr( "tap:AMP.setState( { $expanded_state_id: ! $expanded_state_id } )" )
-			);
-			$dropdown_button .= '>';
-
-			if ( isset( $args['icon'] ) ) {
-				$dropdown_button .= $args['icon'];
-			}
-			if ( isset( $args['expand_text'] ) && isset( $args['collapse_text'] ) ) {
-				$dropdown_button .= sprintf(
-					'<span class="screen-reader-text" [text]="%s">%s</span>',
-					esc_attr( sprintf( "$expanded_state_id ? %s : %s", wp_json_encode( $args['collapse_text'] ), wp_json_encode( $args['expand_text'] ) ) ),
-					esc_html( $expanded ? $args['collapse_text'] : $args['expand_text'] )
-				);
-			}
-
-			$dropdown_button .= '</button>';
-
-			$item_output .= $dropdown_button;
-			return $item_output;
-		}, 10, 4 );
+			$a->setAttribute( 'data-amp-bind-class', "$selected_slide_state_id == $i ? 'slider-active' : ''" );
+			$a->setAttribute( 'role', 'button' );
+			$a->setAttribute( 'on', "tap:AMP.setState( { $selected_slide_state_id: $i } )" );
+			$li->setAttribute( 'option', (string) $i );
+			$a->appendChild( $this->dom->createTextNode( $i + 1 ) );
+			$li->appendChild( $a );
+			$slider_control_nav->appendChild( $li );
+		}
+		$amp_selector->appendChild( $slider_control_nav );
+		$featured_content->appendChild( $amp_selector );
 	}
 
 	/**
-	 * Output image styles for twentynineteen.
+	 * Use AMP-based solutions for toggling search bar in Twenty Fourteen.
 	 *
-	 * When <img> tags have an 'aligncenter' class, AMP_Img_Sanitizer::handle_centering() wraps theme in <figure class="aligncenter">.
-	 * This ensures that the image inside it is centered.
-	 *
-	 * @since 1.0
-	 *
-	 * @param array $args Arguments.
+	 * @link https://github.com/WordPress/wordpress-develop/blob/fc2a8f0e11316d066a686995b8578d82cd5546cf/src/wp-content/themes/twentyfourteen/js/functions.js#L69-L87
 	 */
-	public static function add_twentynineteen_image_styles( $args = array() ) {
-		add_action( 'wp_enqueue_scripts', function() use ( $args ) {
-			ob_start();
-			?>
-			<style>
-				figure.aligncenter {
-					text-align: center
-				}
-			</style>
-			<?php
-			$styles = str_replace( array( '<style>', '</style>' ), '', ob_get_clean() );
-			wp_add_inline_style( get_template() . '-style', $styles );
-		}, 11 );
+	public function add_twentyfourteen_search() {
+		$search_toggle_div  = $this->xpath->query( '//div[ contains( @class, "search-toggle" ) ]' )->item( 0 );
+		$search_toggle_link = $this->xpath->query( './a', $search_toggle_div )->item( 0 );
+		$search_container   = $this->dom->getElementById( 'search-container' );
+		if ( ! $search_toggle_div || ! $search_toggle_link || ! $search_container ) {
+			return;
+		}
+
+		// Create the <amp-state> element that contains whether the search bar is shown.
+		$amp_state       = $this->dom->createElement( 'amp-state' );
+		$hidden_state_id = 'twentyfourteenSearchHidden';
+		$hidden          = true;
+		$amp_state->setAttribute( 'id', $hidden_state_id );
+		$script = $this->dom->createElement( 'script' );
+		$script->setAttribute( 'type', 'application/json' );
+		$script->appendChild( $this->dom->createTextNode( wp_json_encode( $hidden ) ) );
+		$amp_state->appendChild( $script );
+		$search_container->appendChild( $amp_state );
+
+		// Update AMP state to show the search bar and focus on search input when tapping on the search button.
+		$search_input_id = 'twentyfourteen_search_input';
+		$search_input_el = $this->xpath->query( './/input[ @name = "s" ]', $search_container )->item( 0 );
+		$search_toggle_link->removeAttribute( 'href' );
+		$on = "tap:AMP.setState( { $hidden_state_id: ! $hidden_state_id } )";
+		if ( $search_input_el ) {
+			$search_input_el->setAttribute( 'id', $search_input_id );
+			$on .= ",$search_input_id.focus()";
+		}
+		$search_toggle_link->setAttribute( 'on', $on );
+		$search_toggle_link->setAttribute( 'tabindex', '0' );
+		$search_toggle_link->setAttribute( 'role', 'button' );
+
+		// Set visibility and aria-expanded based of the link based on whether the search bar is expanded.
+		$search_toggle_link->setAttribute( 'aria-expanded', wp_json_encode( $hidden ) );
+		$search_toggle_link->setAttribute( 'data-amp-bind-aria-expanded', "$hidden_state_id ? 'false' : 'true'" );
+		$search_toggle_div->setAttribute( 'data-amp-bind-class', "$hidden_state_id ? 'search-toggle' : 'search-toggle active'" );
+		$search_container->setAttribute( 'data-amp-bind-class', "$hidden_state_id ? 'search-box-wrapper hide' : 'search-box-wrapper'" );
 	}
 }

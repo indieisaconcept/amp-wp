@@ -11,24 +11,24 @@
  */
 class AMP_DOM_Utils_Test extends WP_UnitTestCase {
 	public function test_utf8_content() {
-		$source = '<p>Iñtërnâtiônàlizætiøn</p>';
+		$source   = '<p>Iñtërnâtiônàlizætiøn</p>';
 		$expected = '<p>Iñtërnâtiônàlizætiøn</p>';
 
-		$dom = AMP_DOM_Utils::get_dom_from_content( $source );
+		$dom     = AMP_DOM_Utils::get_dom_from_content( $source );
 		$content = AMP_DOM_Utils::get_content_from_dom( $dom );
 		$this->assertEquals( $expected, $content );
 	}
 
 	public function test_add_attributes_to_node__no_attributes() {
-		$dom = AMP_DOM_Utils::get_dom_from_content( '<p>Hello World</p>' );
+		$dom  = AMP_DOM_Utils::get_dom_from_content( '<p>Hello World</p>' );
 		$node = $dom->createElement( 'b' );
 		AMP_DOM_Utils::add_attributes_to_node( $node, array() );
 		$this->assertFalse( $node->hasAttributes() );
 	}
 
 	public function test_add_attributes_to_node__attribute_without_value() {
-		$dom = AMP_DOM_Utils::get_dom_from_content( '<p>Hello World</p>' );
-		$node = $dom->createElement( 'div' );
+		$dom        = AMP_DOM_Utils::get_dom_from_content( '<p>Hello World</p>' );
+		$node       = $dom->createElement( 'div' );
 		$attributes = array( 'placeholder' => '' );
 		AMP_DOM_Utils::add_attributes_to_node( $node, $attributes );
 
@@ -37,9 +37,12 @@ class AMP_DOM_Utils_Test extends WP_UnitTestCase {
 	}
 
 	public function test_add_attributes_to_node__attribute_with_value() {
-		$dom = AMP_DOM_Utils::get_dom_from_content( '<p>Hello World</p>' );
-		$node = $dom->createElement( 'div' );
-		$attributes = array( 'class' => 'myClass', 'id' => 'myId' );
+		$dom        = AMP_DOM_Utils::get_dom_from_content( '<p>Hello World</p>' );
+		$node       = $dom->createElement( 'div' );
+		$attributes = array(
+			'class' => 'myClass',
+			'id'    => 'myId',
+		);
 		AMP_DOM_Utils::add_attributes_to_node( $node, $attributes );
 
 		$this->assertTrue( $node->hasAttributes() );
@@ -49,7 +52,7 @@ class AMP_DOM_Utils_Test extends WP_UnitTestCase {
 	protected function check_node_has_attributes( $node, $attributes ) {
 		$this->assertEquals( count( $attributes ), $node->attributes->length );
 		foreach ( $node->attributes as $attr ) {
-			$name = $attr->nodeName;
+			$name  = $attr->nodeName;
 			$value = $attr->nodeValue;
 
 			$this->assertTrue( array_key_exists( $name, $attributes ), sprintf( 'Attribute "%s" not found.', $name ) );
@@ -59,24 +62,24 @@ class AMP_DOM_Utils_Test extends WP_UnitTestCase {
 
 	public function test__is_node_empty__yes() {
 		$source = '<p></p>';
-		$dom = AMP_DOM_Utils::get_dom_from_content( $source );
-		$node = $dom->getElementsByTagName( 'p' )->item( 0 );
+		$dom    = AMP_DOM_Utils::get_dom_from_content( $source );
+		$node   = $dom->getElementsByTagName( 'p' )->item( 0 );
 
 		$this->assertTrue( AMP_DOM_Utils::is_node_empty( $node ) );
 	}
 
 	public function test__is_node_empty__no__has_text() {
 		$source = '<p>Hello</p>';
-		$dom = AMP_DOM_Utils::get_dom_from_content( $source );
-		$node = $dom->getElementsByTagName( 'p' )->item( 0 );
+		$dom    = AMP_DOM_Utils::get_dom_from_content( $source );
+		$node   = $dom->getElementsByTagName( 'p' )->item( 0 );
 
 		$this->assertFalse( AMP_DOM_Utils::is_node_empty( $node ) );
 	}
 
 	public function test__is_node_empty__no__has_child() {
 		$source = '<p><b></b></p>';
-		$dom = AMP_DOM_Utils::get_dom_from_content( $source );
-		$node = $dom->getElementsByTagName( 'p' )->item( 0 );
+		$dom    = AMP_DOM_Utils::get_dom_from_content( $source );
+		$node   = $dom->getElementsByTagName( 'p' )->item( 0 );
 
 		$this->assertFalse( AMP_DOM_Utils::is_node_empty( $node ) );
 	}
@@ -85,7 +88,7 @@ class AMP_DOM_Utils_Test extends WP_UnitTestCase {
 		$source   = '<br>';
 		$expected = '<br>';
 
-		$dom = AMP_DOM_Utils::get_dom_from_content( $source );
+		$dom    = AMP_DOM_Utils::get_dom_from_content( $source );
 		$actual = AMP_DOM_Utils::get_content_from_dom( $dom );
 
 		$this->assertEquals( $expected, $actual );
@@ -163,22 +166,25 @@ class AMP_DOM_Utils_Test extends WP_UnitTestCase {
 			),
 		);
 
-		$html = implode( "\n", array(
-			'<!--amp-source-stack {"block_name":"core\/columns"}-->',
-			'<div class="wp-block-columns has-2-columns">',
-			'<!--amp-source-stack {"block_name":"core\/quote","block_attrs":{"layout":"column-1"}}-->',
-			'<blockquote class="wp-block-quote layout-column-1"><p>Quote</p><cite>Famous</cite></blockquote>',
-			'<!--/amp-source-stack {"block_name":"core\/quote","block_attrs":{"layout":"column-1"}}-->',
-			'<!-- wp:paragraph -->',
-			'<p><a href="https://example.com/"><img src="https://example.com/img.jpg"></a></p>',
-			'<!-- /wp:paragraph -->',
-			'</div>',
-			'<!--/amp-source-stack {"block_name":"core\/columns"}-->',
-			'<!-- wp:html {} -->',
-			'<script type="application/json">' . wp_json_encode( $data ) . '</script>',
-			'<template type="amp-mustache">Hello {{world}}! <a href="{{href}}" title="Hello {{name}}"><img src="{{src}}"></a><blockquote cite="{{cite}}">{{quote}}</blockquote></template>',
-			'<!-- /wp:html -->',
-		) );
+		$html = implode(
+			"\n",
+			array(
+				'<!--amp-source-stack {"block_name":"core\/columns"}-->',
+				'<div class="wp-block-columns has-2-columns">',
+				'<!--amp-source-stack {"block_name":"core\/quote","block_attrs":{"layout":"column-1"}}-->',
+				'<blockquote class="wp-block-quote layout-column-1"><p>Quote</p><cite>Famous</cite></blockquote>',
+				'<!--/amp-source-stack {"block_name":"core\/quote","block_attrs":{"layout":"column-1"}}-->',
+				'<!-- wp:paragraph -->',
+				'<p><a href="https://example.com/"><img src="https://example.com/img.jpg"></a></p>',
+				'<!-- /wp:paragraph -->',
+				'</div>',
+				'<!--/amp-source-stack {"block_name":"core\/columns"}-->',
+				'<!-- wp:html {} -->',
+				'<script type="application/json">' . wp_json_encode( $data ) . '</script>',
+				'<template type="amp-mustache">Hello {{world}}! <a href="{{href}}" title="Hello {{name}}"><img src="{{src}}"></a><blockquote cite="{{cite}}">{{quote}}</blockquote></template>',
+				'<!-- /wp:html -->',
+			)
+		);
 
 		$dom   = AMP_DOM_Utils::get_dom_from_content( $html );
 		$xpath = new DOMXPath( $dom );
@@ -302,5 +308,177 @@ class AMP_DOM_Utils_Test extends WP_UnitTestCase {
 
 		$output = AMP_DOM_Utils::get_content_from_dom( $dom );
 		$this->assertEquals( $body, $output );
+	}
+
+	/**
+	 * Test that HEAD and BODY elements are always present.
+	 *
+	 * @covers \AMP_DOM_Utils::get_dom()
+	 */
+	public function test_ensuring_head_body() {
+		$html = '<html><body><p>Hello</p></body></html>';
+		$dom  = AMP_DOM_Utils::get_dom( $html );
+		$this->assertEquals( 'head', $dom->documentElement->firstChild->nodeName );
+		$this->assertEquals( 0, $dom->documentElement->firstChild->childNodes->length );
+		$this->assertEquals( 'body', $dom->documentElement->lastChild->nodeName );
+		$this->assertEquals( $dom->documentElement->lastChild, $dom->getElementsByTagName( 'p' )->item( 0 )->parentNode );
+
+		$html = '<html><head><title>foo</title></head></html>';
+		$dom  = AMP_DOM_Utils::get_dom( $html );
+		$this->assertEquals( 'head', $dom->documentElement->firstChild->nodeName );
+		$this->assertEquals( $dom->documentElement->firstChild, $dom->getElementsByTagName( 'title' )->item( 0 )->parentNode );
+		$this->assertEquals( 'body', $dom->documentElement->lastChild->nodeName );
+		$this->assertEquals( 0, $dom->documentElement->lastChild->childNodes->length );
+
+		$html = '<html><head><title>foo</title></head><p>no body</p></html>';
+		$dom  = AMP_DOM_Utils::get_dom( $html );
+		$this->assertEquals( 'head', $dom->documentElement->firstChild->nodeName );
+		$this->assertEquals( $dom->documentElement->firstChild, $dom->getElementsByTagName( 'title' )->item( 0 )->parentNode );
+		$p = $dom->getElementsByTagName( 'p' )->item( 0 );
+		$this->assertEquals( $dom->documentElement->lastChild, $p->parentNode );
+		$this->assertEquals( 'no body', $p->textContent );
+
+		$html = 'Hello world';
+		$dom  = AMP_DOM_Utils::get_dom( $html );
+		$this->assertEquals( 'head', $dom->documentElement->firstChild->nodeName );
+		$this->assertEquals( 0, $dom->documentElement->firstChild->childNodes->length );
+		$this->assertEquals( 'body', $dom->documentElement->lastChild->nodeName );
+		$p = $dom->getElementsByTagName( 'p' )->item( 0 );
+		$this->assertEquals( $dom->documentElement->lastChild, $p->parentNode );
+		$this->assertEquals( 'Hello world', $p->textContent );
+	}
+
+	/**
+	 * Get head node data.
+	 *
+	 * @return array Head node data.
+	 */
+	public function get_head_node_data() {
+		$dom = new DOMDocument();
+		return array(
+			array(
+				AMP_DOM_Utils::create_node( $dom, 'title', array() ),
+				true,
+			),
+			array(
+				AMP_DOM_Utils::create_node(
+					$dom,
+					'base',
+					array( 'href' => '/' )
+				),
+				true,
+			),
+			array(
+				AMP_DOM_Utils::create_node(
+					$dom,
+					'script',
+					array( 'src' => 'http://example.com/test.js' )
+				),
+				true,
+			),
+			array(
+				AMP_DOM_Utils::create_node( $dom, 'style', array( 'media' => 'print' ) ),
+				true,
+			),
+			array(
+				AMP_DOM_Utils::create_node( $dom, 'noscript', array() ),
+				true,
+			),
+			array(
+				AMP_DOM_Utils::create_node(
+					$dom,
+					'link',
+					array(
+						'rel'  => 'stylesheet',
+						'href' => 'https://example.com/foo.css',
+					)
+				),
+				true,
+			),
+			array(
+				AMP_DOM_Utils::create_node(
+					$dom,
+					'meta',
+					array(
+						'name'    => 'foo',
+						'content' => 'https://example.com/foo.css',
+					)
+				),
+				true,
+			),
+			array(
+				$dom->createTextNode( " \n\t" ),
+				true,
+			),
+			array(
+				$dom->createTextNode( 'no' ),
+				false,
+			),
+			array(
+				$dom->createComment( 'hello world' ),
+				true,
+			),
+			array(
+				$dom->createProcessingInstruction( 'test' ),
+				false,
+			),
+			array(
+				$dom->createCDATASection( 'nope' ),
+				false,
+			),
+			array(
+				$dom->createEntityReference( 'bad' ),
+				false,
+			),
+			array(
+				$dom->createElementNS( 'http://www.w3.org/2000/svg', 'svg' ),
+				false,
+			),
+			array(
+				AMP_DOM_Utils::create_node( $dom, 'span', array() ),
+				false,
+			),
+		);
+	}
+
+	/**
+	 * Test is_valid_head_node().
+	 *
+	 * @dataProvider get_head_node_data
+	 * @covers \AMP_DOM_Utils::is_valid_head_node()
+	 *
+	 * @param DOMNode $node  Node.
+	 * @param bool    $valid Expected valid.
+	 */
+	public function test_is_valid_head_node( $node, $valid ) {
+		$this->assertEquals( $valid, AMP_DOM_Utils::is_valid_head_node( $node ) );
+	}
+
+	/**
+	 * Test that invalid head nodes are moved to body.
+	 *
+	 * @covers \AMP_DOM_Utils::move_invalid_head_nodes_to_body()
+	 */
+	public function test_invalid_head_nodes() {
+
+		// Text node.
+		$html = '<html><head>text</head><body><span>end</span></body></html>';
+		$dom  = AMP_DOM_Utils::get_dom( $html );
+		$this->assertNull( $dom->getElementsByTagName( 'head' )->item( 0 )->firstChild );
+		$body_first_child = $dom->getElementsByTagName( 'body' )->item( 0 )->firstChild;
+		$this->assertInstanceOf( 'DOMElement', $body_first_child );
+		$this->assertEquals( 'text', $body_first_child->textContent );
+
+		// Valid nodes.
+		$html = '<html><head><!--foo--><title>a</title><base href="/"><meta name="foo" content="bar"><link rel="test" href="/"><style></style><noscript><img src="http://example.com/foo.png"></noscript><script></script></head><body></body></html>';
+		$dom  = AMP_DOM_Utils::get_dom( $html );
+		$this->assertEquals( 8, $dom->getElementsByTagName( 'head' )->item( 0 )->childNodes->length );
+		$this->assertNull( $dom->getElementsByTagName( 'body' )->item( 0 )->firstChild );
+
+		// Invalid nodes.
+		$html = '<html><head><?pi ?><span></span><div></div><p>hi</p><img src="https://example.com"><iframe src="/"></iframe></head><body></body></html>';
+		$dom  = AMP_DOM_Utils::get_dom( $html );
+		$this->assertNull( $dom->getElementsByTagName( 'head' )->item( 0 )->firstChild );
+		$this->assertEquals( 6, $dom->getElementsByTagName( 'body' )->item( 0 )->childNodes->length );
 	}
 }

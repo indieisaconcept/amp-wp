@@ -36,12 +36,19 @@ class AMP_Post_Type_Support {
 	 * @return string[] Post types eligible for AMP.
 	 */
 	public static function get_eligible_post_types() {
-		return array_values( get_post_types(
-			array(
-				'public' => true,
+		return array_diff(
+			array_values(
+				get_post_types(
+					array(
+						'public' => true,
+					),
+					'names'
+				)
 			),
-			'names'
-		) );
+			array(
+				AMP_Story_Post_Type::POST_TYPE_SLUG,
+			)
+		);
 	}
 
 	/**
@@ -119,10 +126,14 @@ class AMP_Post_Type_Support {
 						&&
 						'page' === get_option( 'show_on_front' )
 						&&
-						in_array( (int) $post->ID, array(
-							(int) get_option( 'page_on_front' ),
-							(int) get_option( 'page_for_posts' ),
-						), true )
+						in_array(
+							(int) $post->ID,
+							array(
+								(int) get_option( 'page_on_front' ),
+								(int) get_option( 'page_for_posts' ),
+							),
+							true
+						)
 					)
 				)
 			);

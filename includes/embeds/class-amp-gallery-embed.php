@@ -42,15 +42,19 @@ class AMP_Gallery_Embed_Handler extends AMP_Base_Embed_Handler {
 			$attr['include'] = $attr['ids'];
 		}
 
-		$atts = shortcode_atts( array(
-			'order'   => 'ASC',
-			'orderby' => 'menu_order ID',
-			'id'      => $post ? $post->ID : 0,
-			'include' => '',
-			'exclude' => '',
-			'size'    => array( $this->args['width'], $this->args['height'] ),
-			'link'    => 'none',
-		), $attr, 'gallery' );
+		$atts = shortcode_atts(
+			array(
+				'order'   => 'ASC',
+				'orderby' => 'menu_order ID',
+				'id'      => $post ? $post->ID : 0,
+				'include' => '',
+				'exclude' => '',
+				'size'    => array( $this->args['width'], $this->args['height'] ),
+				'link'    => 'none',
+			),
+			$attr,
+			'gallery'
+		);
 
 		if ( ! empty( $attr['amp-lightbox'] ) ) {
 			$atts['lightbox'] = filter_var( $attr['amp-lightbox'], FILTER_VALIDATE_BOOLEAN );
@@ -59,36 +63,42 @@ class AMP_Gallery_Embed_Handler extends AMP_Base_Embed_Handler {
 		$id = intval( $atts['id'] );
 
 		if ( ! empty( $atts['include'] ) ) {
-			$attachments = get_posts( array(
-				'include'        => $atts['include'],
-				'post_status'    => 'inherit',
-				'post_type'      => 'attachment',
-				'post_mime_type' => 'image',
-				'order'          => $atts['order'],
-				'orderby'        => $atts['orderby'],
-				'fields'         => 'ids',
-			) );
+			$attachments = get_posts(
+				array(
+					'include'        => $atts['include'],
+					'post_status'    => 'inherit',
+					'post_type'      => 'attachment',
+					'post_mime_type' => 'image',
+					'order'          => $atts['order'],
+					'orderby'        => $atts['orderby'],
+					'fields'         => 'ids',
+				)
+			);
 		} elseif ( ! empty( $atts['exclude'] ) ) {
-			$attachments = get_children( array(
-				'post_parent'    => $id,
-				'exclude'        => $atts['exclude'],
-				'post_status'    => 'inherit',
-				'post_type'      => 'attachment',
-				'post_mime_type' => 'image',
-				'order'          => $atts['order'],
-				'orderby'        => $atts['orderby'],
-				'fields'         => 'ids',
-			) );
+			$attachments = get_children(
+				array(
+					'post_parent'    => $id,
+					'exclude'        => $atts['exclude'],
+					'post_status'    => 'inherit',
+					'post_type'      => 'attachment',
+					'post_mime_type' => 'image',
+					'order'          => $atts['order'],
+					'orderby'        => $atts['orderby'],
+					'fields'         => 'ids',
+				)
+			);
 		} else {
-			$attachments = get_children( array(
-				'post_parent'    => $id,
-				'post_status'    => 'inherit',
-				'post_type'      => 'attachment',
-				'post_mime_type' => 'image',
-				'order'          => $atts['order'],
-				'orderby'        => $atts['orderby'],
-				'fields'         => 'ids',
-			) );
+			$attachments = get_children(
+				array(
+					'post_parent'    => $id,
+					'post_status'    => 'inherit',
+					'post_type'      => 'attachment',
+					'post_mime_type' => 'image',
+					'order'          => $atts['order'],
+					'orderby'        => $atts['orderby'],
+					'fields'         => 'ids',
+				)
+			);
 		}
 
 		if ( empty( $attachments ) ) {
@@ -183,13 +193,19 @@ class AMP_Gallery_Embed_Handler extends AMP_Base_Embed_Handler {
 	public function render( $args ) {
 		$this->did_convert_elements = true;
 
-		$args = wp_parse_args( $args, array(
-			'images' => false,
-		) );
+		$args = wp_parse_args(
+			$args,
+			array(
+				'images' => false,
+			)
+		);
 
 		if ( empty( $args['images'] ) ) {
 			return '';
 		}
+
+		$max_width  = 0;
+		$max_height = 0;
 
 		$images = array();
 		foreach ( $args['images'] as $props ) {
@@ -199,6 +215,8 @@ class AMP_Gallery_Embed_Handler extends AMP_Base_Embed_Handler {
 				'height' => $props['height'],
 				'layout' => 'responsive',
 			);
+			$max_width  = max( $max_width, $props['width'] );
+			$max_height = max( $max_height, $props['height'] );
 			if ( ! empty( $args['lightbox'] ) ) {
 				$image_atts['lightbox'] = '';
 				$image_atts['on']       = 'tap:' . AMP_Img_Sanitizer::AMP_IMAGE_LIGHTBOX_ID;
@@ -226,8 +244,8 @@ class AMP_Gallery_Embed_Handler extends AMP_Base_Embed_Handler {
 		return AMP_HTML_Utils::build_tag(
 			'amp-carousel',
 			array(
-				'width'  => $this->args['width'],
-				'height' => $this->args['height'],
+				'width'  => $max_width,
+				'height' => $max_height,
 				'type'   => 'slides',
 				'layout' => 'responsive',
 			),

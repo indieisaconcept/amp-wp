@@ -21,7 +21,7 @@ define( 'AMP_CUSTOMIZER_QUERY_VAR', 'customize_amp' );
  * And this does not need to toggle between the AMP and normal display.
  */
 function amp_init_customizer() {
-	if ( amp_is_canonical() ) {
+	if ( amp_is_canonical() || ! AMP_Options_Manager::is_website_experience_enabled() ) {
 		return;
 	}
 
@@ -67,16 +67,18 @@ function amp_admin_get_preview_permalink() {
 		}
 	}
 
-	$post_ids = get_posts( array(
-		'no_found_rows'    => true,
-		'suppress_filters' => false,
-		'post_status'      => 'publish',
-		'post_password'    => '',
-		'post_type'        => $supported_post_types,
-		'posts_per_page'   => 1,
-		'fields'           => 'ids',
+	$post_ids = get_posts(
+		array(
+			'no_found_rows'    => true,
+			'suppress_filters' => false,
+			'post_status'      => 'publish',
+			'post_password'    => '',
+			'post_type'        => $supported_post_types,
+			'posts_per_page'   => 1,
+			'fields'           => 'ids',
 		// @todo This should eventually do a meta_query to make sure there are none that have AMP_Post_Meta_Box::STATUS_POST_META_KEY = DISABLED_STATUS.
-	) );
+		)
+	);
 
 	if ( empty( $post_ids ) ) {
 		return false;
@@ -96,11 +98,14 @@ function amp_add_customizer_link() {
 		return;
 	}
 
-	$menu_slug = add_query_arg( array(
-		'autofocus[panel]' => AMP_Template_Customizer::PANEL_ID,
-		'url'              => rawurlencode( amp_admin_get_preview_permalink() ),
-		'return'           => rawurlencode( admin_url() ),
-	), 'customize.php' );
+	$menu_slug = add_query_arg(
+		array(
+			'autofocus[panel]' => AMP_Template_Customizer::PANEL_ID,
+			'url'              => rawurlencode( amp_admin_get_preview_permalink() ),
+			'return'           => rawurlencode( admin_url() ),
+		),
+		'customize.php'
+	);
 
 	// Add the theme page.
 	add_theme_page(
@@ -191,6 +196,16 @@ function amp_editor_core_blocks() {
  * @since 1.0
  */
 function amp_admin_pointer() {
-	$admin_pointer = new AMP_Admin_Pointer();
-	$admin_pointer->init();
+	$admin_pointers = new AMP_Admin_Pointers();
+	$admin_pointers->init();
+}
+
+/**
+ * Bootstrap the Story Templates needed in editor.
+ *
+ * @since 1.?
+ */
+function amp_story_templates() {
+	$story_templates = new AMP_Story_Templates();
+	$story_templates->init();
 }
